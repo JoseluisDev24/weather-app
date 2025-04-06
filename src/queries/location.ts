@@ -1,4 +1,20 @@
+"use client";
+
 import { useState, useEffect } from "react";
+
+interface Address {
+  city?: string;
+  town?: string;
+  village?: string;
+  road?: string;
+  house_number?: string;
+  neighbourhood?: string;
+  postcode?: string;
+}
+
+interface NominatimResponse {
+  address: Address;
+}
 
 interface LocationData {
   city: string;
@@ -12,46 +28,33 @@ export default function useLocationQuery() {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setError("La geolocalización no está soportada en este navegador.");
+      setError("Geolocalización no soportada.");
       return;
     }
 
-    const fetchLocation = async (latitude: number, longitude: number) => {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`
-        );
-
-        if (!response.ok) {
-          throw new Error("Error al obtener los datos de ubicación.");
-        }
-
-        const data = await response.json();
-
-        setLocation({
-          city:
-            data.address.city ||
-            data.address.town ||
-            data.address.village ||
-            "Desconocido",
-          address: [
-            data.address.road,
-            data.address.house_number,
-            data.address.neighbourhood,
-          ]
-            .filter(Boolean) // Elimina valores `undefined` o vacíos
-            .join(" "),
-          postalCode: data.address.postcode || "N/A",
-        });
-      } catch (err) {
-        setError("No se pudo obtener la ubicación.");
-      }
-    };
-
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        fetchLocation(latitude, longitude);
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data: NominatimResponse = await res.json();
+
+          const address = data.address;
+
+          setLocation({
+            city:
+              address.city || address.town || address.village || "Desconocido",
+            address: `${address.road || ""} ${address.house_number || ""}, ${
+              address.neighbourhood || ""
+            }`.trim(),
+            postalCode: address.postcode || "N/A",
+          });
+        } catch (err) {
+          console.error("Error fetching location data:", err);
+          setError("No se pudo obtener la ubicación.");
+        }
       },
       () => {
         setError("Permiso de ubicación denegado.");

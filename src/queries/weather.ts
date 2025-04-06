@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { AxiosError } from "axios";
 import weatherService from "../services/httpClient/weatherService";
 
 interface WeatherData {
@@ -8,6 +9,25 @@ interface WeatherData {
   weather: { description: string; icon: string }[];
   main: { temp: number; humidity: number };
   wind: { speed: number };
+}
+
+interface ForecastItem {
+  dt: number;
+  dt_txt: string;
+  main: {
+    temp_min: number;
+    temp_max: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+}
+
+interface ForecastResponse {
+  list: ForecastItem[];
+  cod: string;
+  message?: string;
 }
 
 interface ForecastData {
@@ -18,16 +38,19 @@ interface ForecastData {
   description: string;
 }
 
+interface WeatherErrorResponse {
+  message: string;
+}
+
 const useWeatherQuery = (city: string) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [forecast, setForecast] = useState<ForecastData[]>([]); // Tipo actualizado
+  const [forecast, setForecast] = useState<ForecastData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Hacemos que fetchWeather sea una función que no cambie a menos que `city` cambie.
   const fetchWeather = useCallback(async () => {
     if (!city.trim()) return;
     setError(null);
-    setForecast([]); // Limpiar pronóstico previo
+    setForecast([]);
 
     try {
       const weatherResponse = await weatherService.get("weather", {
@@ -44,22 +67,24 @@ const useWeatherQuery = (city: string) => {
 
       setWeather(weatherResponse.data);
 
-      const forecastResponse = await weatherService.get("forecast", {
-        params: {
-          q: city,
-          appid: process.env.NEXT_PUBLIC_WEATHER_API_KEY,
-          units: "metric",
-          lang: "es",
-        },
-      });
+      const forecastResponse = await weatherService.get<ForecastResponse>(
+        "forecast",
+        {
+          params: {
+            q: city,
+            appid: process.env.NEXT_PUBLIC_WEATHER_API_KEY,
+            units: "metric",
+            lang: "es",
+          },
+        }
+      );
 
       if (forecastResponse.data.cod !== "200")
         throw new Error(forecastResponse.data.message);
 
-      // Filtrar y transformar los datos del pronóstico
       const dailyForecast = forecastResponse.data.list
-        .filter((item: any) => item.dt_txt.includes("12:00:00"))
-        .map((item: any) => ({
+        .filter((item) => item.dt_txt.includes("12:00:00"))
+        .map((item) => ({
           date: new Date(item.dt * 1000).toLocaleDateString("es-ES", {
             weekday: "long",
           }),
@@ -70,17 +95,21 @@ const useWeatherQuery = (city: string) => {
         }));
 
       setForecast(dailyForecast);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Error al obtener el clima");
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<WeatherErrorResponse>;
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
+      } else {
+        setError("Error al obtener el clima");
+      }
     }
-  }, [city]); // Usamos `useCallback` para que esta función no cambie a menos que cambie `city`
+  }, [city]);
 
-  // Usamos `useEffect` solo cuando `city` cambie
   useEffect(() => {
     if (city.trim()) {
       fetchWeather();
     }
-  }, [city, fetchWeather]); // Solo se vuelve a ejecutar cuando `city` cambia
+  }, [city, fetchWeather]);
 
   return { weather, forecast, error, fetchWeather };
 };

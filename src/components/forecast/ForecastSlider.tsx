@@ -15,11 +15,11 @@ interface ForecastSliderProps {
 
 const ForecastSlider: React.FC<ForecastSliderProps> = ({ forecast }) => {
   return (
-    <div className="w-full max-w-4xl mx-auto mt-6">
+    <div className="w-full max-w-4xl mx-auto mt-6 px-3">
       <Swiper
         spaceBetween={20}
         slidesPerView={3}
-        loop={true}
+        loop={false}
         centeredSlides={true}
         breakpoints={{
           640: {
@@ -29,7 +29,7 @@ const ForecastSlider: React.FC<ForecastSliderProps> = ({ forecast }) => {
             slidesPerView: 2,
           },
           1024: {
-            slidesPerView: 3,
+            slidesPerView: 4,
           },
         }}
       >
@@ -40,7 +40,7 @@ const ForecastSlider: React.FC<ForecastSliderProps> = ({ forecast }) => {
               icon={day.icon}
               tempMin={day.tempMin}
               tempMax={day.tempMax}
-              description={day.description}
+              description={""}
             />
           </SwiperSlide>
         ))}

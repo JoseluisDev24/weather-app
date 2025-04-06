@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 interface ForecastCardProps {
@@ -18,10 +19,13 @@ const ForecastCard: React.FC<ForecastCardProps> = ({
   return (
     <div className="bg-gray-800 text-white p-4 rounded-lg">
       <p className="text-xl font-bold">{date}</p>
-      <img
+      <Image
+        width={100}
+        height={100}
         src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
         alt={description}
         className="mx-auto my-2"
+        priority={true}
       />
       <p className="text-lg">
         {tempMax}° / {tempMin}°
