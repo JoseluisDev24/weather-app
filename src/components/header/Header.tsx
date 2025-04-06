@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
           </div>
           <div>
             {location && (
-              <div className="text-sm text-gray-300 flex gap-2">
+              <div className="text-sm text-gray-300 flex gap-2 justify-center items-center">
                 <p>📍 {location.city}</p>
                 <p>📮 {location.postalCode}</p>
               </div>
@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
       {/* Campo de búsqueda debajo del header */}
       {isSearchVisible && (
         <div className="w-full mt-4 flex flex-col items-center">
-          <div className="flex gap-2 w-full max-w-md">
+          <div className="flex gap-2 w-full max-w-md px-6">
             <TextField
               variant="outlined"
               size="small"
