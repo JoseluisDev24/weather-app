@@ -44,68 +44,64 @@ const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
 
   return (
     <>
-      <header className="w-full bg-gray-800 text-white p-4 flex items-center justify-center gap-4">
-          <div className="flex items-center gap-6 w-full justify-between px-4">
-            <div className="flex items-center gap-6">
-<div className="flex items-center justify-center gap-2">
-              <WbSunnyIcon fontSize="large" className="text-yellow-500" />
-              <h1>Weather</h1>
-            </div>
-            <div>
-              {location && (
-                <div className="text-sm text-gray-300 flex gap-2">
-                  <p>📍 {location.city}</p>
-                  <p>📮 {location.postalCode}</p>
-                </div>
-              )}
-            </div>
-            </div>
-            {!isSearchVisible && (
-              <SearchIcon
-                fontSize="large"
-                className="text-white cursor-pointer"
-                onClick={toggleSearchField}
-              />
+      {/* Header */}
+      <header className="w-full bg-gray-800 text-white p-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center justify-center gap-2">
+            <WbSunnyIcon fontSize="large" className="text-yellow-500" />
+            <h1>Weather</h1>
+          </div>
+          <div>
+            {location && (
+              <div className="text-sm text-gray-300 flex gap-2">
+                <p>📍 {location.city}</p>
+                <p>📮 {location.postalCode}</p>
+              </div>
             )}
           </div>
-
-          {isSearchVisible && (
-            <div className="w-full flex flex-col items-center mt-2 relative">
-              <div className="flex gap-2 w-full max-w-md">
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  value={inputCity}
-                  onChange={(e) => setInputCity(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Buscar ciudad..."
-                  className="bg-white rounded w-full"
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSearch}
-                >
-                  Buscar
-                </Button>
-              </div>
-
-              {suggestions.length > 0 && (
-                <Paper className="absolute top-full mt-1 w-full max-w-md z-50">
-                  {suggestions.map((city, index) => (
-                    <MenuItem
-                      key={index}
-                      onClick={() => handleCitySelect(city.name)} // Llamamos a handleCitySelect al seleccionar
-                    >
-                      {city.name}, {city.country}{" "}
-                      {city.state && `(${city.state})`}
-                    </MenuItem>
-                  ))}
-                </Paper>
-              )}
-            </div>
-          )}
+        </div>
+        <div className="relative">
+          <SearchIcon
+            fontSize="large"
+            className="text-white cursor-pointer"
+            onClick={toggleSearchField}
+          />
+        </div>
       </header>
+
+      {/* Campo de búsqueda debajo del header */}
+      {isSearchVisible && (
+        <div className="w-full mt-4 flex flex-col items-center">
+          <div className="flex gap-2 w-full max-w-md">
+            <TextField
+              variant="outlined"
+              size="small"
+              value={inputCity}
+              onChange={(e) => setInputCity(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Buscar ciudad..."
+              className="bg-white rounded w-full"
+            />
+            <Button variant="contained" color="primary" onClick={handleSearch}>
+              Buscar
+            </Button>
+          </div>
+
+          {/* Mostrar sugerencias solo si hay sugerencias */}
+          {suggestions.length > 0 && (
+            <Paper className="mt-1 w-full max-w-md z-50">
+              {suggestions.map((city, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={() => handleCitySelect(city.name)} // Llamamos a handleCitySelect al seleccionar
+                >
+                  {city.name}, {city.country} {city.state && `(${city.state})`}
+                </MenuItem>
+              ))}
+            </Paper>
+          )}
+        </div>
+      )}
     </>
   );
 };

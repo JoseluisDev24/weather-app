@@ -17,19 +17,19 @@ const ForecastSlider: React.FC<ForecastSliderProps> = ({ forecast }) => {
   return (
     <div className="w-full max-w-4xl mx-auto mt-6 px-3">
       <Swiper
-        spaceBetween={20}
+        spaceBetween={15}
         slidesPerView={3}
-        loop={false}
+        loop={true}
         centeredSlides={true}
         breakpoints={{
           640: {
-            slidesPerView: 1,
+            slidesPerView: 3,
           },
           768: {
-            slidesPerView: 2,
+            slidesPerView: 3,
           },
           1024: {
-            slidesPerView: 4,
+            slidesPerView: 5,
           },
         }}
       >
