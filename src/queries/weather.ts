@@ -46,11 +46,13 @@ const useWeatherQuery = (city: string) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchWeather = useCallback(async () => {
     if (!city.trim()) return;
     setError(null);
     setForecast([]);
+    setLoading(true);
 
     try {
       const weatherResponse = await weatherClient.get("weather", {
@@ -102,6 +104,8 @@ const useWeatherQuery = (city: string) => {
       } else {
         setError("Error al obtener el clima");
       }
+    } finally {
+      setLoading(false);
     }
   }, [city]);
 
@@ -111,7 +115,7 @@ const useWeatherQuery = (city: string) => {
     }
   }, [city, fetchWeather]);
 
-  return { weather, forecast, error, fetchWeather };
+  return { weather, forecast, error, loading, fetchWeather };
 };
 
 export default useWeatherQuery;

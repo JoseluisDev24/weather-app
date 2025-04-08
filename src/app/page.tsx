@@ -6,10 +6,12 @@ import useLocationQuery from "../queries/location";
 import Header from "../components/header/Header";
 import ForecastSlider from "../components/forecast/ForecastSlider";
 import Image from "next/image";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
-  const { weather, forecast, error, fetchWeather } = useWeatherQuery(city);
+  const { weather, forecast, error, loading, fetchWeather } =
+    useWeatherQuery(city);
   const { location } = useLocationQuery();
 
   const handleSearch = (newCity: string) => {
@@ -35,7 +37,12 @@ export default function Home() {
       <div className="max-w-md w-full p-6 pt-24 flex flex-col items-center mx-auto">
         {error && <p className="text-center text-red-500">{error}</p>}
 
-        {weather && (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <CircularProgress />
+            <p className="mt-4 text-xl">Loading...</p>
+          </div>
+        ) : weather ? (
           <div className="text-center">
             <h2 className="text-3xl font-semibold">{weather.name}</h2>
             {weather.weather && weather.weather[0]?.icon && (
@@ -49,11 +56,13 @@ export default function Home() {
               />
             )}
             <p className="text-xl">{weather.weather?.[0]?.description}</p>
-            <p className="text-5xl font-bold">{Math.round(weather.main.temp)}°C</p>
+            <p className="text-5xl font-bold">
+              {Math.round(weather.main.temp)}°C
+            </p>
             <p className="text-sm mt-2">Humedad: {weather.main.humidity}%</p>
             <p className="text-sm">Viento: {weather.wind.speed} km/h</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       {forecast.length > 0 && <ForecastSlider forecast={forecast} />}
