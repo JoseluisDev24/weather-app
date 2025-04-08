@@ -12,20 +12,17 @@ export default function Home() {
   const { weather, forecast, error, fetchWeather } = useWeatherQuery(city);
   const { location } = useLocationQuery();
 
-  // Cuando el usuario escribe una ciudad y busca
   const handleSearch = (newCity: string) => {
     setCity(newCity);
     fetchWeather();
   };
 
-  // 🔁 Cuando detectamos la ubicación automáticamente, actualizamos la ciudad
   useEffect(() => {
     if (location?.city && !city) {
       setCity(location.city);
     }
   }, [location, city]);
 
-  // 🔁 Si la ciudad cambia (por ubicación o búsqueda manual), llamamos a la API
   useEffect(() => {
     if (city) {
       fetchWeather();
@@ -33,9 +30,9 @@ export default function Home() {
   }, [city, fetchWeather]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col md:min-h-screen">
       <Header location={location} onSearch={handleSearch} />
-      <div className="max-w-md w-full p-6 flex flex-col items-center mx-auto">
+      <div className="max-w-md w-full p-6 pt-24 flex flex-col items-center mx-auto">
         {error && <p className="text-center text-red-500">{error}</p>}
 
         {weather && (
@@ -48,10 +45,11 @@ export default function Home() {
                 src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
                 alt={weather.weather[0].description}
                 className="mx-auto"
+                priority={true}
               />
             )}
             <p className="text-xl">{weather.weather?.[0]?.description}</p>
-            <p className="text-5xl font-bold">{weather.main.temp}°C</p>
+            <p className="text-5xl font-bold">{Math.round(weather.main.temp)}°C</p>
             <p className="text-sm mt-2">Humedad: {weather.main.humidity}%</p>
             <p className="text-sm">Viento: {weather.wind.speed} km/h</p>
           </div>

@@ -1,7 +1,7 @@
-// src/queries/geocoding.ts
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+
+import { useEffect, useState } from "react";
+import geoClient from "../services/httpClient/geoClient";
 
 interface Suggestion {
   name: string;
@@ -22,24 +22,20 @@ export default function useCitySuggestions(query: string) {
       }
 
       try {
-        const res = await axios.get(
-          "https://api.openweathermap.org/geo/1.0/direct",
-          {
-            params: {
-              q: query,
-              limit: 5,
-              appid: process.env.NEXT_PUBLIC_WEATHER_API_KEY,
-            },
-          }
-        );
-
+        const res = await geoClient.get("direct", {
+          params: {
+            q: query,
+            limit: 5,
+            appid: process.env.NEXT_PUBLIC_WEATHER_API_KEY,
+          },
+        });
         setSuggestions(res.data);
-      } catch (err) {
-        console.error("Error al obtener sugerencias:", err);
+      } catch (error) {
+        console.error("Error al obtener sugerencias:", error);
       }
     };
 
-    const timeout = setTimeout(fetchSuggestions, 500); // debounce
+    const timeout = setTimeout(fetchSuggestions, 500);
 
     return () => clearTimeout(timeout);
   }, [query]);

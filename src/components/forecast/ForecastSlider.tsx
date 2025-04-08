@@ -1,7 +1,6 @@
-// src/components/ForecastSlider.tsx
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import ForecastCard from "./ForecastCard"; // Importamos el componente ForecastCard
+import ForecastCard from "./ForecastCard";
 
 interface ForecastSliderProps {
   forecast: Array<{

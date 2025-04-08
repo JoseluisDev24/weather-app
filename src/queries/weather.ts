@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { AxiosError } from "axios";
-import weatherService from "../services/httpClient/weatherService";
+import weatherClient from "../services/httpClient";
 
 interface WeatherData {
   name: string;
@@ -53,7 +53,7 @@ const useWeatherQuery = (city: string) => {
     setForecast([]);
 
     try {
-      const weatherResponse = await weatherService.get("weather", {
+      const weatherResponse = await weatherClient.get("weather", {
         params: {
           q: city,
           appid: process.env.NEXT_PUBLIC_WEATHER_API_KEY,
@@ -67,7 +67,7 @@ const useWeatherQuery = (city: string) => {
 
       setWeather(weatherResponse.data);
 
-      const forecastResponse = await weatherService.get<ForecastResponse>(
+      const forecastResponse = await weatherClient.get<ForecastResponse>(
         "forecast",
         {
           params: {
@@ -83,8 +83,8 @@ const useWeatherQuery = (city: string) => {
         throw new Error(forecastResponse.data.message);
 
       const dailyForecast = forecastResponse.data.list
-        .filter((item) => item.dt_txt.includes("12:00:00"))
-        .map((item) => ({
+        .filter((item: ForecastItem) => item.dt_txt.includes("12:00:00"))
+        .map((item: ForecastItem) => ({
           date: new Date(item.dt * 1000).toLocaleDateString("es-ES", {
             weekday: "long",
           }),

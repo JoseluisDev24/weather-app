@@ -1,6 +1,4 @@
 import Image from "next/image";
-import React from "react";
-
 interface ForecastCardProps {
   date: string;
   icon: string;
