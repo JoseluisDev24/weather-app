@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import WbSunnyIcon from "@mui/icons-material/WbSunny"; 
-import SearchIcon from "@mui/icons-material/Search"; 
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import SearchIcon from "@mui/icons-material/Search";
 import Paper from "@mui/material/Paper";
 import MenuItem from "@mui/material/MenuItem";
-import useCitySuggestions from "../../queries/geocoding"; 
+import useCitySuggestions from "../../queries/geocoding";
+import Link from "next/link";
 
 interface HeaderProps {
   location: {
@@ -18,40 +19,47 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
-  const [inputCity, setInputCity] = useState(""); 
-  const [isSearchVisible, setIsSearchVisible] = useState(false); 
-  const [selectedCity, setSelectedCity] = useState(""); 
-  const suggestions = useCitySuggestions(inputCity); 
+  const [inputCity, setInputCity] = useState("");
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
+  const suggestions = useCitySuggestions(inputCity);
 
   const handleSearch = () => {
     if (selectedCity.trim()) {
       onSearch(selectedCity);
       setInputCity("");
-      setSelectedCity(""); 
+      setSelectedCity("");
     }
   };
 
   const handleCitySelect = (city: string) => {
-    setInputCity(city); 
-    setSelectedCity(city); 
-    onSearch(city); 
+    setInputCity(city);
+    setSelectedCity(city);
+    onSearch(city);
     setIsSearchVisible(false);
-    setInputCity(""); 
+    setInputCity("");
   };
 
   const toggleSearchField = () => {
-    setIsSearchVisible(!isSearchVisible); 
+    setIsSearchVisible(!isSearchVisible);
+  };
+
+  const reloadPage = () => {
+    window.location.reload();
   };
 
   return (
     <>
-      {/* Header */}
       <header className="w-full fixed bg-gray-800 text-white p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-            <a href="/" className="flex items-center gap-2">
-              <WbSunnyIcon fontSize="large" className="text-yellow-500" />
-              <h1>Weather</h1>
-            </a>
+          <Link
+            href="/"
+            className="flex items-center gap-2"
+            onClick={reloadPage}
+          >
+            <WbSunnyIcon fontSize="large" className="text-yellow-500" />
+            <h1 onClick={reloadPage}>Weather</h1>{" "}
+          </Link>
           <div>
             {location && (
               <div className="text-xs md:text-sm text-gray-300 flex gap-2 justify-center items-center">

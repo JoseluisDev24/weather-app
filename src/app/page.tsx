@@ -31,6 +31,14 @@ export default function Home() {
     }
   }, [city, fetchWeather]);
 
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleDateString("es-ES", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="flex flex-col md:min-h-screen">
       <Header location={location} onSearch={handleSearch} />
@@ -45,6 +53,7 @@ export default function Home() {
         ) : weather ? (
           <div className="text-center">
             <h2 className="text-3xl font-semibold">{weather.name}</h2>
+            <p className="text-sm mt-2">{formattedDate}</p>
             {weather.weather && weather.weather[0]?.icon && (
               <Image
                 width={100}
