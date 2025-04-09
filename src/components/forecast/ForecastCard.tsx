@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 interface ForecastCardProps {
   date: string;
   icon: string;
@@ -15,8 +16,8 @@ const ForecastCard: React.FC<ForecastCardProps> = ({
   description,
 }) => {
   return (
-    <div className="bg-gray-800 text-white p-4 rounded-lg">
-      <p className="text-xl font-bold">{date}</p>
+    <div className="bg-gray-800 text-white p-4 rounded-lg flex flex-col items-center justify-between">
+      <p className="text-lg font-bold mb-1">{date}</p>
       <Image
         width={100}
         height={100}
@@ -25,7 +26,7 @@ const ForecastCard: React.FC<ForecastCardProps> = ({
         className="mx-auto my-2"
         priority={true}
       />
-      <p className="text-lg">
+      <p className="text-lg mb-2">
         {tempMax}° / {tempMin}°
       </p>
       <p className="text-sm text-gray-300">{description}</p>

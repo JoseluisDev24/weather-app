@@ -18,8 +18,8 @@ const ForecastSlider: React.FC<ForecastSliderProps> = ({ forecast }) => {
       <Swiper
         spaceBetween={15}
         slidesPerView={3}
-        loop={true}
-        centeredSlides={true}
+        loop={false}
+        centeredSlides={false}
         breakpoints={{
           640: {
             slidesPerView: 3,

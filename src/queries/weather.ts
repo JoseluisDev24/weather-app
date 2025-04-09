@@ -86,17 +86,20 @@ const useWeatherQuery = (city: string) => {
 
       const dailyForecast = forecastResponse.data.list
         .filter((item: ForecastItem) => item.dt_txt.includes("12:00:00"))
-        .map((item: ForecastItem) => ({
-          date: new Date(item.dt * 1000).toLocaleDateString("es-ES", {
-            weekday: "long",
-          }),
-          icon: item.weather[0].icon,
-          tempMin: item.main.temp_min,
-          tempMax: item.main.temp_max,
-          description: item.weather[0].description,
-        }));
+        .map((item: ForecastItem) => {
+          const dateObj = new Date(item.dt * 1000);
+          return {
+            date: dateObj.toLocaleDateString("es-ES", { weekday: "long" }),
+            fullDate: dateObj,
+            icon: item.weather[0].icon,
+            tempMin: item.main.temp_min,
+            tempMax: item.main.temp_max,
+            description: item.weather[0].description,
+          };
+        })
+        .sort((a, b) => a.fullDate.getTime() - b.fullDate.getTime());
 
-      setForecast(dailyForecast);
+      setForecast(dailyForecast.map(({ fullDate, ...rest }) => rest));
     } catch (err: unknown) {
       const axiosError = err as AxiosError<WeatherErrorResponse>;
       if (axiosError.response?.data?.message) {
