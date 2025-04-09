@@ -48,10 +48,10 @@ const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
       {/* Header */}
       <header className="w-full fixed bg-gray-800 text-white p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-          <div className="flex items-center justify-center gap-2">
-            <WbSunnyIcon fontSize="large" className="text-yellow-500" />
-            <h1>Weather</h1>
-          </div>
+            <a href="/" className="flex items-center gap-2">
+              <WbSunnyIcon fontSize="large" className="text-yellow-500" />
+              <h1>Weather</h1>
+            </a>
           <div>
             {location && (
               <div className="text-xs md:text-sm text-gray-300 flex gap-2 justify-center items-center">
@@ -92,7 +92,7 @@ const Header: React.FC<HeaderProps> = ({ location, onSearch }) => {
               {suggestions.map((city, index) => (
                 <MenuItem
                   key={index}
-                  onClick={() => handleCitySelect(city.name)} 
+                  onClick={() => handleCitySelect(city.name)}
                 >
                   {city.name}, {city.country} {city.state && `(${city.state})`}
                 </MenuItem>
