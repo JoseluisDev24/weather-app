@@ -15,18 +15,20 @@ export default function Home() {
   const { location } = useLocationQuery();
 
   const handleSearch = (newCity: string) => {
+    console.log("New city selected:", newCity); // Verificar la ciudad nueva
     setCity(newCity);
-    fetchWeather();
   };
 
   useEffect(() => {
     if (location?.city && !city) {
+      console.log("Setting city based on location:", location.city); // Verificar si se está usando la ubicación
       setCity(location.city);
     }
   }, [location, city]);
 
   useEffect(() => {
     if (city) {
+      console.log("Fetching weather for city:", city); // Verificar cuándo se hace la solicitud
       fetchWeather();
     }
   }, [city, fetchWeather]);
@@ -39,32 +41,40 @@ export default function Home() {
     day: "numeric",
   });
 
+  console.log("Weather data:", weather); // Verificar la respuesta del clima
+  console.log("Forecast data:", forecast); // Verificar los datos del pronóstico
+
   return (
     <div className="flex flex-col md:min-h-screen">
       <Header location={location} onSearch={handleSearch} />
+
       <div className="max-w-md w-full p-6 pt-24 flex flex-col items-center mx-auto">
         {error && <p className="text-center text-red-500">{error}</p>}
 
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full">
             <CircularProgress />
-            <p className="mt-4 text-xl">Loading...</p>
+            <p className="mt-4 text-xl">Cargando...</p>
           </div>
         ) : weather ? (
           <div className="text-center">
             <h2 className="text-3xl font-semibold">{weather.name}</h2>
             <p className="text-sm mt-2">{formattedDate}</p>
-            {weather.weather && weather.weather[0]?.icon && (
+
+            {weather.weather?.[0]?.icon && (
               <Image
                 width={100}
                 height={100}
-                src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                alt={weather.weather[0].description}
+                src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
+                alt={weather.weather[0].description || "Icono del clima"}
                 className="mx-auto"
-                priority={true}
+                priority
               />
             )}
-            <p className="text-xl">{weather.weather?.[0]?.description}</p>
+
+            <p className="text-xl capitalize">
+              {weather.weather?.[0]?.description}
+            </p>
             <p className="text-5xl font-bold">
               {Math.round(weather.main.temp)}°C
             </p>

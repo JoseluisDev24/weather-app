@@ -84,16 +84,38 @@ const useWeatherQuery = (city: string) => {
       if (forecastResponse.data.cod !== "200")
         throw new Error(forecastResponse.data.message);
 
-      const dailyForecast = forecastResponse.data.list
-        .filter((item: ForecastItem) => item.dt_txt.includes("12:00:00"))
-        .map((item: ForecastItem) => {
-          const dateObj = new Date(item.dt * 1000);
+      // Agrupar por día
+      const groupedByDay: { [date: string]: ForecastItem[] } = {};
+
+      forecastResponse.data.list.forEach((item) => {
+        const date = item.dt_txt.split(" ")[0]; // yyyy-mm-dd
+        if (!groupedByDay[date]) {
+          groupedByDay[date] = [];
+        }
+        groupedByDay[date].push(item);
+      });
+
+      // Procesar cada día
+      const dailyForecast = Object.keys(groupedByDay)
+        .slice(1, 6) // siguientes 5 días, salteando hoy
+        .map((dateStr) => {
+          const items = groupedByDay[dateStr];
+          const tempsMin = items.map((i) => i.main.temp_min);
+          const tempsMax = items.map((i) => i.main.temp_max);
+
+          const midDayItem =
+            items.find((i) => i.dt_txt.includes("12:00:00")) || items[0];
+
+          const dateObj = new Date(midDayItem.dt * 1000);
+
           return {
-            date: dateObj.toLocaleDateString("es-ES", { weekday: "long" }),
-            icon: item.weather[0].icon,
-            tempMin: item.main.temp_min,
-            tempMax: item.main.temp_max,
-            description: item.weather[0].description,
+            date: dateObj.toLocaleDateString("es-ES", {
+              weekday: "long",
+            }),
+            icon: midDayItem.weather[0].icon,
+            tempMin: Math.round(Math.min(...tempsMin)),
+            tempMax: Math.round(Math.max(...tempsMax)),
+            description: midDayItem.weather[0].description,
           };
         });
 
